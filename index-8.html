@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wedding of Sarah & David</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Italianno&family=MonteCarlo&family=Montserrat:wght@400;500;700&family=Nunito:wght@400;600;700&family=Rouge+Script&family=Sofia+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <style type="text/tailwindcss">
+        @layer base {
+            :root {
+                --light-color: #F7F9FD;
+                --light-gray: #EDF2F6;
+                --mid-gray: #D1D5D6;
+                --accent-dark: #8A684E;
+                --accent-light: #CFB697;
+                --accent-gold: #DC9116;
+            }
+            body {
+                font-family: 'Nunito', sans-serif;
+                background-color: var(--light-color);
+                color: var(--accent-dark);
+            }
+            .font-latin {
+                font-family: 'Rouge Script', cursive;
+            }
+            .font-nunito {
+                font-family: 'Nunito', sans-serif;
+            }
+            /* Simple fade-in animation for sections */
+            .fade-in-up {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            }
+            .fade-in-up.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <audio id="wedding-song" loop>
+        <source src="YOUR_MP3_SOURCE.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="opening-dialog"
+        class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center transition-opacity duration-1000">
+        <!-- <div class="absolute inset-0 bg-cover bg-center"
+            style="background-image: url('https://images.unsplash.com/photo-1534001359290-d28d71736ea0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470');">
+        </div> -->
+                <div class="absolute inset-0 bg-cover bg-center"
+                    style="background-image: url('assets/img-11.png');">
+                </div>
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+        <div class="relative text-center text-white p-8 rounded-lg max-w-lg mx-4" data-fade-in>
+            <h2 class="font-nunito text-lg tracking-widest">THE WEDDING OF</h2>
+            <h1 class="font-latin text-6xl md:text-8xl my-4">Sarah & David</h1>
+            <p class="font-nunito mt-8 mb-2">Kepada Yth.</p>
+            <p class="font-nunito text-lg font-bold" id="recipient-name">Bapak/Ibu/Saudara/i</p>
+            <button id="open-invitation"
+                class="mt-8 bg-white/20 backdrop-blur-md text-white font-nunito font-bold py-3 px-8 rounded-full border border-white/50 hover:bg-white/40 transition duration-300">
+                Buka Undangan
+            </button>
+        </div>
+    </div>
+
+    <main id="main-content" class="hidden">
+
+        <div class="fixed bottom-5 right-5 z-40 flex flex-col gap-3">
+            <button id="scroll-up-button"
+                class="hidden bg-white/50 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white/80 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-var(--accent-dark)" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                </svg>
+            </button>
+            <button id="audio-control"
+                class="bg-white/50 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white/80 transition">
+                <div id="icon-unmuted">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-var(--accent-dark)" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    </svg>
+                </div>
+                <div id="icon-muted" class="hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-var(--accent-dark)" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9l4 4m0-4l-4 4" />
+                    </svg>
+                </div>
+            </button>
+        </div>
+
+        <section id="profile" class="py-20 px-6 lg:px-12 text-center fade-in-up">
+            <div class="max-w-4xl mx-auto">
+                <p class="mb-4">"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri
+                    dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya
+                    diantaramu rasa kasih dan sayang."</p>
+                <p class="font-semibold">(QS. Ar-Rum: 21)</p>
+
+                <div class="mt-16 flex flex-col md:flex-row justify-center items-center gap-12 md:gap-16">
+                    <div class="w-full md:w-1/2">
+                        <img src="assets/img-2.png" alt="Viny Aricha Isfichandra"
+                            class="w-48 h-48 md:w-56 md:h-56 rounded-full mx-auto object-cover shadow-lg border-4 border-var(--accent-light)">
+                        <h3 class="font-latin text-5xl mt-6 text-var(--accent-dark)">Viny Aricha Isfichandra</h3>
+                        <p class="mt-4 font-semibold text-lg">Putri Pertama dari</p>
+                        <p>Bapak Evyn Iswinarko & Ibu Ani Misfitri</p>
+                        <a href="#" class="inline-block mt-4 text-var(--accent-gold) hover:text-var(--accent-dark)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.644-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.059-1.281.073-1.689.073-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.058-1.689-.072-4.948-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <span class="font-latin text-7xl text-var(--accent-light)">&</span>
+
+                    <div class="w-full md:w-1/2">
+                        <img src="assets/img-12.png" alt="Sugeng Eko Saputro"
+                            class="w-48 h-48 md:w-56 md:h-56 rounded-full mx-auto object-cover shadow-lg border-4 border-var(--accent-light)">
+                        <h3 class="font-latin text-5xl mt-6 text-var(--accent-dark)">Sugeng Eko Saputro</h3>
+                        <p class="mt-4 font-semibold text-lg">Putra Kedua dari</p>
+                        <p>Bapak Eko Wahyudi & Ibu Sunayah</p>
+                        <a href="#" class="inline-block mt-4 text-var(--accent-gold) hover:text-var(--accent-dark)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.644-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.059-1.281.073-1.689.073-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.058-1.689-.072-4.948-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="event" class="py-20 px-6 lg:px-12 bg-var(--light-gray) text-center fade-in-up">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="font-latin text-6xl">Save The Date</h2>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-left">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h3 class="font-latin text-4xl text-var(--accent-dark) text-center mb-6">Akad Nikah</h3>
+                        <div class="flex items-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-var(--accent-gold)"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p>Jumat, 14 Februari 2026</p>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-var(--accent-gold)"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p>09:00 - 10:00 WIB</p>
+                        </div>
+                        <div class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 mr-3 text-var(--accent-gold) flex-shrink-0" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <p>Masjid Agung Al-Akbar<br>Jl. Masjid Al-Akbar Timur No.1, Surabaya</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h3 class="font-latin text-4xl text-var(--accent-dark) text-center mb-6">Resepsi</h3>
+                        <div class="flex items-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-var(--accent-gold)"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p>Sabtu, 15 Februari 2026</p>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-var(--accent-gold)"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p>19:00 - 21:00 WIB</p>
+                        </div>
+                        <div class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6 mr-3 text-var(--accent-gold) flex-shrink-0" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <p>Grand Ballroom The Westin<br>Jl. Mayjend Jonosewojo, Surabaya</p>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="mt-8 w-full h-80 bg-var(--mid-gray) rounded-lg flex items-center justify-center text-var(--accent-dark)">
+                    <p>Area untuk Google Maps iframe Anda</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery-story" class="py-20 px-6 lg:px-12 text-center fade-in-up">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="font-latin text-6xl mb-12">Our Moments</h2>
+                <div class="grid grid-cols-4 grid-rows-2 gap-4 h-[600px]">
+                    <div class="col-span-2 row-span-2 rounded-lg overflow-hidden"><img
+                            src="assets/img-4.png"
+                            class="w-full h-full object-cover" alt="Gallery 1"></div>
+                    <div class="rounded-lg overflow-hidden"><img
+                            src="assets/img-8.png"
+                            class="w-full h-full object-cover" alt="Gallery 3"></div>
+                    <div class="rounded-lg overflow-hidden"><img
+                            src="assets/img-9.png"
+                            class="w-full h-full object-cover" alt="Gallery 4"></div>
+                    <div class="rounded-lg overflow-hidden"><img src="assets/img-10.png" 
+                        class="w-full h-full object-cover" alt="Gallery 5"></div>
+                    <div class="rounded-lg overflow-hidden"><img src="assets/img-6.png" 
+                        class="w-full h-full object-cover" alt="Gallery 6"></div>
+                </div>
+
+                <h2 class="font-latin text-6xl mt-20 mb-12">Our Love Story</h2>
+                <div class="relative max-w-2xl mx-auto">
+                    <div class="absolute left-1/2 top-0 h-full w-0.5 bg-var(--accent-light)"></div>
+
+                    <div class="relative mb-12 fade-in-up">
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-var(--accent-gold) rounded-full border-4 border-white">
+                        </div>
+                        <div class="w-full md:w-1/2 md:pr-8 md:text-right">
+                            <p class="font-bold text-lg text-var(--accent-dark)">2021 - Pertemuan Pertama</p>
+                            <p class="mt-2 text-gray-600">Kami pertama kali bertemu di sebuah acara komunitas. Dari
+                                obrolan ringan, kami menemukan banyak kesamaan yang membuat kami semakin dekat.</p>
+                        </div>
+                    </div>
+
+                    <div class="relative mb-12 fade-in-up">
+                        <div
+                            class="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-var(--accent-gold) rounded-full border-4 border-white">
+                        </div>
+                        <div class="w-full md:w-1/2 md:ml-auto md:pl-8 md:text-left">
+                            <p class="font-bold text-lg text-var(--accent-dark)">2024 - Lamaran</p>
+                            <p class="mt-2 text-gray-600">Di bawah langit senja, sebuah janji diikrarkan untuk membawa
+                                hubungan ini ke jenjang yang lebih serius, disaksikan oleh keluarga tercinta.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gift" class="py-20 px-6 lg:px-12 bg-var(--light-gray) text-center fade-in-up">
+            <div class="max-w-xl mx-auto">
+                <h2 class="font-latin text-6xl">Wedding Gift</h2>
+                <p class="mt-4 max-w-md mx-auto">Doa restu Anda adalah hadiah terindah bagi kami. Namun, jika Anda ingin
+                    memberikan tanda kasih, kami telah menyediakan kemudahan di bawah ini.</p>
+                <div class="bg-white rounded-lg shadow-lg p-8 mt-10 text-left">
+                    <img src="https://upload.wikimedia.org/wikipedia/id/thumb/5/55/BNI_logo.svg/2560px-BNI_logo.svg.png"
+                        alt="Logo Bank" class="h-8 mb-6">
+                    <p class="text-gray-500">Nomor Rekening</p>
+                    <div class="flex justify-between items-center">
+                        <p id="account-number" class="text-xl font-bold text-var(--accent-dark)">1234567890</p>
+                        <button id="copy-button"
+                            class="bg-var(--accent-light) text-var(--accent-dark) text-sm font-bold py-2 px-4 rounded-full hover:bg-var(--accent-gold) transition">Salin</button>
+                    </div>
+                    <p class="text-gray-500 mt-4">Atas Nama</p>
+                    <p class="text-xl font-bold text-var(--accent-dark)">David Budi</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="closing" class="py-20 px-6 lg:px-12 text-center fade-in-up">
+            <div class="max-w-2xl mx-auto">
+                <p class="text-lg">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i
+                    berkenan hadir untuk memberikan doa restu kepada kami.</p>
+                <p class="mt-8">Atas kehadiran dan doa restunya, kami ucapkan terima kasih.</p>
+                <h3 class="font-latin text-6xl mt-12">Sarah & David</h3>
+            </div>
+        </section>
+
+        <footer class="py-8 px-6 text-center bg-var(--accent-dark) text-amber-800-/70">
+            <p>Made with ❤️ by Sugeng Eko Saputro & Viny Aricha Isfichandra | &copy; 2025</p>
+        </footer>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // === Fitur 1: Memutar Lagu & Membuka Undangan ===
+            const openButton = document.getElementById('open-invitation');
+            const openingDialog = document.getElementById('opening-dialog');
+            const mainContent = document.getElementById('main-content');
+            const song = document.getElementById('wedding-song');
+            const audioControl = document.getElementById('audio-control');
+            const iconUnmuted = document.getElementById('icon-unmuted');
+            const iconMuted = document.getElementById('icon-muted');
+
+            openButton.addEventListener('click', () => {
+                // Sembunyikan dialog dengan animasi
+                openingDialog.classList.add('opacity-0');
+                setTimeout(() => {
+                    openingDialog.style.display = 'none';
+                }, 1000); // Sesuaikan dengan durasi transisi
+
+                // Tampilkan konten utama
+                mainContent.classList.remove('hidden');
+                document.body.style.overflowY = 'auto'; // Aktifkan scroll
+
+                // Putar lagu
+                song.volume = 0.7; // Volume 70%
+                song.play().catch(error => {
+                    console.log("Autoplay was prevented. User needs to interact with the page first.");
+                });
+            });
+
+            // Kontrol Mute/Unmute
+            audioControl.addEventListener('click', () => {
+                song.muted = !song.muted;
+                iconUnmuted.classList.toggle('hidden');
+                iconMuted.classList.toggle('hidden');
+            });
+
+
+            // === Fitur 2: Mengambil Nama Penerima dari URL ===
+            const recipientNameElement = document.getElementById('recipient-name');
+            const urlParams = new URLSearchParams(window.location.search);
+            const recipient = urlParams.get('to');
+
+            if (recipient) {
+                recipientNameElement.textContent = recipient.replace(/'/g, ' ');
+            }
+
+
+            // === Fitur 3: Navigasi Scroll Up ===
+            const scrollUpButton = document.getElementById('scroll-up-button');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 400) {
+                    scrollUpButton.classList.remove('hidden');
+                } else {
+                    scrollUpButton.classList.add('hidden');
+                }
+            });
+
+            scrollUpButton.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // === Fitur Tambahan: Salin Nomor Rekening ===
+            const copyButton = document.getElementById('copy-button');
+            const accountNumber = document.getElementById('account-number').textContent;
+
+            copyButton.addEventListener('click', () => {
+                navigator.clipboard.writeText(accountNumber).then(() => {
+                    copyButton.textContent = 'Tersalin!';
+                    setTimeout(() => {
+                        copyButton.textContent = 'Salin';
+                    }, 2000);
+                });
+            });
+
+            // === Fitur Tambahan: Animasi Fade-in saat scroll ===
+            const sections = document.querySelectorAll('.fade-in-up');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+
+</html>
