@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Undangan Pernikahan — [Nama Mempelai]</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rouge+Script&family=Italianno&family=MonteCarlo&family=Nunito:wght@300;400;700&family=Montserrat:wght@400;600&family=Sofia+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind Play CDN (rapid prototyping) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Custom small utilities */
+        :root {
+            --bg-light-1: #F7F9FD;
+            --bg-light-2: #EDF2F6;
+            --bg-light-3: #D1D5D6;
+            --accent-1: #8A684E;
+            --accent-2: #CFB697;
+            --accent-3: #DC9116;
+        }
+
+        body {
+            font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: var(--bg-light-1);
+            color: #111827;
+        }
+
+        /* Cover dialog backdrop blur + dim */
+        .cover-bg {
+            background-size: cover;
+            background-position: center;
+        }
+
+        .backdrop-dim::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(4px);
+        }
+
+        /* In-out animation */
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        .fade-enter-active {
+            transition: opacity .6s ease, transform .6s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* small decorative accent */
+        .accent-line {
+            background: linear-gradient(90deg, var(--accent-2), var(--accent-3));
+            height: 3px;
+            border-radius: 3px;
+        }
+
+        /* audio controls mobile-friendly */
+        .audio-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* stepper */
+        .stepper-line {
+            width: 2px;
+            background: linear-gradient(#e6e6e6, #ddd);
+        }
+
+        .stepper-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 999px;
+            background: var(--accent-1);
+            display: inline-block;
+        }
+
+        /* small shadow */
+        .soft-card {
+            box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+            border-radius: 12px;
+        }
+
+        /* ensure images not squashed */
+        img.object-cover {
+            object-fit: cover;
+        }
+
+        /* smooth scroll for anchor clicks */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- NAVBAR (fixed top minimal) -->
+    <header class="fixed w-full z-40 top-4 left-0 px-4">
+        <nav class="max-w-5xl mx-auto flex items-center justify-between">
+            <div class="bg-white/80 backdrop-blur-md rounded-full px-4 py-2 soft-card flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-sm font-bold text-xs"
+                    style="color:var(--accent-1)">M</div>
+                <div class="hidden sm:block text-sm font-medium">Mempelai • Undangan</div>
+            </div>
+
+            <div
+                class="bg-white/80 backdrop-blur-md rounded-full px-3 py-2 soft-card hidden sm:flex gap-3 items-center">
+                <a href="#section-2" class="text-sm hover:underline">Pasangan</a>
+                <a href="#section-3" class="text-sm hover:underline">Acara</a>
+                <a href="#section-4" class="text-sm hover:underline">Gallery</a>
+                <a href="#section-5" class="text-sm hover:underline">Gift</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- COVER / DIALOG OPENING (SECTION 1) -->
+    <div id="coverDialog" class="fixed inset-0 z-50 flex items-center justify-center">
+        <div id="coverBg" class="w-full h-full cover-bg relative"
+            style="background-image: url('https://images.unsplash.com/photo-1519750157634-bbb02f1c2f66?auto=format&fit=crop&w=1600&q=70');">
+        </div>
+
+        <div class="absolute inset-0 flex items-center justify-center px-6">
+            <div class="text-center max-w-3xl text-white relative z-10">
+                <div class="text-6xl sm:text-8xl font-[Rouge Script],serif"
+                    style="font-family:'Rouge Script', cursive;">A &amp; B</div>
+                <div class="mt-4 text-sm sm:text-base opacity-90">12 Desember 2025</div>
+
+                <h1 id="inviteTo" class="mt-6 text-2xl sm:text-3xl font-semibold">Kepada: <span class="underline"
+                        id="recipientName">Sahabat</span></h1>
+
+                <div class="mt-8 flex items-center justify-center gap-3">
+                    <button id="openBtn"
+                        class="bg-white text-black px-6 py-2 rounded-full font-medium shadow hover:scale-105 transition">Buka
+                        Undangan</button>
+                    <button id="coverMuteToggle"
+                        class="bg-white/20 text-white px-4 py-2 rounded-full hover:scale-105 transition flex items-center gap-2">
+                        <svg id="iconMute" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M9 5v14l11-7L9 5z" />
+                        </svg>
+                        <span class="text-sm">Play Musik</span>
+                    </button>
+                </div>
+
+                <div class="mt-6 text-xs opacity-80">Tap "Buka Undangan" untuk melihat acara &amp; memutar musik.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO PLAYER (hidden, controlled by JS). Put data-title and src accordingly -->
+    <div class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-8 z-50">
+        <div
+            class="max-w-3xl mx-auto bg-white/90 backdrop-blur-md rounded-full px-4 py-2 flex items-center justify-between gap-3 soft-card">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-md bg-gray-100 overflow-hidden flex items-center justify-center">
+                    <!-- album/placeholder -->
+                    <img id="audioCover"
+                        src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=400&q=60"
+                        alt="cover" class="w-full h-full object-cover">
+                </div>
+                <div class="min-w-0">
+                    <div class="audio-title" id="audioTitle">Judul Lagu — (gantikan data-title pada audio)</div>
+                    <div class="text-xs text-gray-500">Pemain Musik</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button id="muteToggle" class="px-3 py-2 rounded-full text-sm bg-white/60 soft-card">Mute</button>
+                <div class="flex items-center gap-2">
+                    <button id="playToggle" class="px-3 py-2 rounded-full text-sm bg-white/60 soft-card">Play</button>
+                </div>
+            </div>
+
+            <!-- actual audio element (hidden) -->
+            <audio id="bgAudio" preload="auto" data-title="Judul Lagu Anda" style="display:none;">
+                <!-- ganti src dengan link mp3 Anda -->
+                <!-- <source src="assets/music.mp3" type="audio/mpeg"> -->
+            </audio>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="pt-28 max-w-5xl mx-auto px-6 space-y-20">
+
+        <!-- SECTION 2: Kata Pembuka + Profil Pasangan -->
+        <section id="section-2" class="opacity-0 transform translate-y-4" data-animate>
+            <div class="text-center">
+                <p class="text-sm text-gray-500">Dengan memohon rahmat dan ridho Allah SWT</p>
+                <h2 class="text-3xl sm:text-4xl font-[Italianno]"
+                    style="font-family:'Italianno', cursive; color:var(--accent-1)">Kami mengundang Anda</h2>
+                <div class="mt-4 text-lg font-medium" id="greetingLine">Kepada <span
+                        id="greetingRecipient">Sahabat</span>, kami harap Anda hadir.</div>
+            </div>
+
+            <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-8 items-start">
+                <!-- Person A -->
+                <div class="bg-white p-6 soft-card rounded-xl">
+                    <div class="flex flex-col items-center">
+                        <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-100">
+                            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=60"
+                                alt="Mempelai Pria" class="w-full h-full object-cover">
+                        </div>
+                        <div class="mt-4 text-xl font-semibold">Nama Mempelai A</div>
+                        <div class="text-sm text-gray-500 mt-1">Putra dari Bapak &amp; Ibu</div>
+                        <div class="mt-3 flex items-center gap-3">
+                            <a href="#" class="text-xs">Instagram</a>
+                            <a href="#" class="text-xs">Website</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Person B -->
+                <div class="bg-white p-6 soft-card rounded-xl">
+                    <div class="flex flex-col items-center">
+                        <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-gray-100">
+                            <img src="https://images.unsplash.com/photo-1524503033411-c9566986fc8f?auto=format&fit=crop&w=600&q=60"
+                                alt="Mempelai Wanita" class="w-full h-full object-cover">
+                        </div>
+                        <div class="mt-4 text-xl font-semibold">Nama Mempelai B</div>
+                        <div class="text-sm text-gray-500 mt-1">Putri dari Bapak &amp; Ibu</div>
+                        <div class="mt-3 flex items-center gap-3">
+                            <a href="#" class="text-xs">Instagram</a>
+                            <a href="#" class="text-xs">Website</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Informasi Acara + Map Placeholder -->
+        <section id="section-3" class="opacity-0 transform translate-y-4" data-animate>
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-2xl font-semibold">Acara</h3>
+                    <div class="mt-2 text-sm text-gray-600">Detail akad &amp; resepsi</div>
+                </div>
+                <div class="hidden sm:block accent-line w-48"></div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 soft-card rounded-xl">
+                    <h4 class="font-semibold">Akad</h4>
+                    <p class="mt-2 text-sm text-gray-600">Sabtu, 12 Desember 2025 — 09:00 WIB</p>
+                    <p class="mt-2 text-sm">Lokasi: Masjid Contoh, Jl. Contoh No.1</p>
+                </div>
+
+                <div class="bg-white p-6 soft-card rounded-xl">
+                    <h4 class="font-semibold">Resepsi</h4>
+                    <p class="mt-2 text-sm text-gray-600">Sabtu, 12 Desember 2025 — 11:00 — 15:00 WIB</p>
+                    <p class="mt-2 text-sm">Lokasi: Gedung Resepsi Contoh, Jl. Contoh No.2</p>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h4 class="text-lg font-semibold mb-3">Peta Lokasi</h4>
+                <!-- Map placeholder: user will replace with embed or map element -->
+                <div
+                    class="w-full h-64 bg-gray-100 rounded-xl soft-card flex items-center justify-center text-gray-400">
+                    MAP PLACEHOLDER — Tambahkan embed / iframe map Anda di sini
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Gallery + Love Story (vertical stepper 3 poin) -->
+        <section id="section-4" class="opacity-0 transform translate-y-4" data-animate>
+            <div class="flex items-center justify-between">
+                <h3 class="text-2xl font-semibold">Gallery & Cerita Cinta</h3>
+                <div class="accent-line w-32"></div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Gallery Bento -->
+                <div>
+                    <div class="grid grid-cols-2 grid-rows-3 gap-2">
+                        <!-- Replace these images as needed; supports 5-8 images gracefully -->
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=60"
+                            class="w-full h-40 rounded-lg object-cover" alt="gallery1">
+                        <img src="https://images.unsplash.com/photo-1523731407965-2430cd12f5e4?auto=format&fit=crop&w=800&q=60"
+                            class="w-full h-40 rounded-lg object-cover" alt="gallery2">
+                        <img src="https://images.unsplash.com/photo-1517457373958-d5a5b2f9d0b4?auto=format&fit=crop&w=800&q=60"
+                            class="w-full h-40 rounded-lg object-cover" alt="gallery3">
+                        <img src="https://images.unsplash.com/photo-1508610048659-a06f9a3f5a6a?auto=format&fit=crop&w=800&q=60"
+                            class="w-full h-40 rounded-lg object-cover" alt="gallery4">
+                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=60"
+                            class="w-full h-40 rounded-lg object-cover" alt="gallery5">
+                        <img src="https://images.unsplash.com/photo-1512149673959-15b7f6b6b56f?auto=format&fit=crop&w=800&q=60"
+                            class="w-full h-40 rounded-lg object-cover" alt="gallery6">
+                    </div>
+                </div>
+
+                <!-- Love story stepper -->
+                <div class="bg-white p-6 soft-card rounded-xl">
+                    <h4 class="font-semibold">Love Story</h4>
+                    <div class="mt-6 flex gap-6">
+                        <div class="flex flex-col items-center">
+                            <div class="stepper-dot"></div>
+                            <div class="h-full w-0.5 stepper-line my-2" style="height:1px"></div>
+                        </div>
+                        <div class="flex-1">
+                            <div class="mb-6">
+                                <div class="text-sm text-gray-500">2018</div>
+                                <div class="font-medium">Pertemuan Pertama</div>
+                                <p class="text-sm text-gray-600 mt-2">Deskripsi singkat bagaimana mereka bertemu di
+                                    suatu acara atau tempat.</p>
+                            </div>
+
+                            <div class="mb-6">
+                                <div class="text-sm text-gray-500">2020</div>
+                                <div class="font-medium">Momen Spesial</div>
+                                <p class="text-sm text-gray-600 mt-2">Momen-momen penting yang mempererat hubungan
+                                    mereka.</p>
+                            </div>
+
+                            <div>
+                                <div class="text-sm text-gray-500">2025</div>
+                                <div class="font-medium">Lamaran & Komitmen</div>
+                                <p class="text-sm text-gray-600 mt-2">Janji dan rencana untuk membangun keluarga
+                                    bersama.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: Gift (Transfer Info Cards) -->
+        <section id="section-5" class="opacity-0 transform translate-y-4" data-animate>
+            <div class="flex items-center justify-between">
+                <h3 class="text-2xl font-semibold">Wedding Gift</h3>
+                <div class="accent-line w-32"></div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card untuk Mempelai A -->
+                <div class="bg-white p-6 rounded-xl soft-card flex gap-4 items-center">
+                    <div class="w-20 h-20 rounded-md bg-gray-100 flex items-center justify-center">
+                        <!-- bank logo placeholder -->
+                        <img src="https://via.placeholder.com/64x40?text=BANK" alt="bank logo" class="object-contain">
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-semibold">Nama Rekening A</div>
+                        <div class="text-sm text-gray-600 mt-1">Bank: BCA</div>
+                        <div class="mt-2 text-lg font-mono">1234 5678 9012</div>
+                        <div class="text-xs text-gray-500 mt-1">Terima kasih atas doa &amp; bantuannya</div>
+                    </div>
+                </div>
+
+                <!-- Card untuk Mempelai B -->
+                <div class="bg-white p-6 rounded-xl soft-card flex gap-4 items-center">
+                    <div class="w-20 h-20 rounded-md bg-gray-100 flex items-center justify-center">
+                        <img src="https://via.placeholder.com/64x40?text=BANK" alt="bank logo" class="object-contain">
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-semibold">Nama Rekening B</div>
+                        <div class="text-sm text-gray-600 mt-1">Bank: Mandiri</div>
+                        <div class="mt-2 text-lg font-mono">0987 6543 210</div>
+                        <div class="text-xs text-gray-500 mt-1">Terima kasih atas doa &amp; bantuannya</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: Penutup -->
+        <section id="section-6" class="opacity-0 transform translate-y-4" data-animate>
+            <div class="bg-white p-8 rounded-xl soft-card text-center">
+                <h4 class="text-xl font-semibold">Penutup</h4>
+                <p class="text-sm text-gray-600 mt-3">Terima kasih atas doa dan kehadiran Anda. Semoga berkah selalu
+                    menyertai kita semua.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 7: Footer Branding -->
+        <footer id="section-7" class="opacity-0 transform translate-y-4" data-animate>
+            <div class="text-center text-sm text-gray-500">
+                <div>Designed with ♥ by YourName</div>
+                <div class="mt-2">Contact: <a href="mailto:hello@example.com" class="underline">hello@example.com</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- SCRIPT: Behavior -->
+    <script>
+        // --- Utility: recipient parsing from URL ---
+        function parseRecipient() {
+            // Try query param ?to=Nama+Lengkap
+            const q = new URLSearchParams(window.location.search).get('to');
+            if (q) return decodeURIComponent(q.replace(/\+/g, ' '));
+
+            // Try path pattern like /to=Nama or /to/Nama (very permissive)
+            const path = window.location.pathname;
+            const pathMatch = path.match(/\/to(?:=|\/)([^\/\?]+)/i);
+            if (pathMatch && pathMatch[1]) return decodeURIComponent(pathMatch[1].replace(/\+/g, ' '));
+
+            return null;
+        }
+
+        // set recipient in UI
+        const recipient = parseRecipient();
+        if (recipient) {
+            document.getElementById('recipientName').textContent = recipient;
+            document.getElementById('greetingRecipient').textContent = recipient;
+            document.getElementById('inviteTo').classList.add('text-emerald-400');
+        } else {
+            // default fallback
+            document.getElementById('recipientName').textContent = 'Sahabat';
+            document.getElementById('greetingRecipient').textContent = 'Sahabat';
+        }
+
+        // --- Audio controls ---
+        const audio = document.getElementById('bgAudio');
+        const audioTitleEl = document.getElementById('audioTitle');
+        const playToggle = document.getElementById('playToggle');
+        const muteToggle = document.getElementById('muteToggle');
+        const coverMuteToggle = document.getElementById('coverMuteToggle');
+        const openBtn = document.getElementById('openBtn');
+        const coverDialog = document.getElementById('coverDialog');
+
+        // initialize volume default 70%
+        audio.volume = 0.7;
+        audio.muted = false;
+
+        // set title from data attribute (if provided)
+        if (audio.dataset && audio.dataset.title) {
+            audioTitleEl.textContent = audio.dataset.title;
+        }
+
+        function updatePlayUI() {
+            if (audio.paused) playToggle.textContent = 'Play';
+            else playToggle.textContent = 'Pause';
+        }
+        function updateMuteUI() {
+            muteToggle.textContent = audio.muted ? 'Unmute' : 'Mute';
+            // icon change on cover button
+            coverMuteToggle.querySelector('span')?.remove();
+        }
+
+        playToggle.addEventListener('click', () => {
+            if (audio.paused) audio.play().catch(() => {/* autoplay may be blocked until user interacts */ });
+            else audio.pause();
+            updatePlayUI();
+        });
+
+        muteToggle.addEventListener('click', () => {
+            audio.muted = !audio.muted;
+            updateMuteUI();
+        });
+
+        // cover play button should also attempt to play and close dialog
+        coverMuteToggle.addEventListener('click', () => {
+            // attempt play but don't close dialog
+            audio.play().catch(() => { });
+            updatePlayUI();
+        });
+
+        // when audio ends or plays, update UI
+        audio.addEventListener('play', updatePlayUI);
+        audio.addEventListener('pause', updatePlayUI);
+        audio.addEventListener('volumechange', updateMuteUI);
+
+        // --- Opening behavior: close cover, auto scroll up, play audio ---
+        openBtn.addEventListener('click', async () => {
+            // Play audio
+            try { await audio.play(); } catch (e) { /* browser may block autoplay until user gesture */ }
+            updatePlayUI();
+
+            // animate cover out
+            coverDialog.classList.add('fade-enter');
+            coverDialog.style.transition = 'opacity .6s ease, transform .6s ease';
+            coverDialog.style.opacity = '0';
+            coverDialog.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                coverDialog.remove();
+                // ensure we land at top of main content
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // focus first section for accessibility
+                const firstSection = document.getElementById('section-2');
+                if (firstSection) firstSection.querySelector('h2, h3, h4, p')?.focus?.();
+            }, 600);
+        });
+
+        // ensure clicking logo nav scrolls smoothly to top
+        document.querySelector('header nav a')?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // --- IntersectionObserver for fade-in on scroll ---
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('opacity-0', 'translate-y-4');
+                    entry.target.classList.add('fade-enter-active');
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'none';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.18 });
+
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- Accessibility & small niceties: keyboard close cover with Enter when focused on open button ---
+        openBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') openBtn.click();
+        });
+
+        // On initial load, ensure page at top
+        window.scrollTo(0, 0);
+
+        // small: show audio title even if audio element has no source (so user replaces)
+        if (!audio.querySelector('source')) {
+            audioTitleEl.textContent = audio.dataset.title || 'Tambahkan file MP3 pada elemen <audio id="bgAudio">';
+        }
+
+        // mobile: ensure audio control area is visible (no extra logic needed, layout handles)
+    </script>
+</body>
+
+</html>

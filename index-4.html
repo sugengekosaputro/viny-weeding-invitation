@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Undangan Pernikahan — [Nama Mempelai]</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Nunito:wght@300;400;700&family=Sofia+Sans:wght@300;400;600&family=Rouge+Script&family=Italianno&family=MonteCarlo&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CDN (playground) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom theme tokens mapped to your palette */
+        :root {
+            --bg-light: #F7F9FD;
+            --bg-mid: #EDF2F6;
+            --bg-darker: #D1D5D6;
+            --accent-dark: #8A684E;
+            --accent-mid: #CFB697;
+            --accent-bright: #DC9116;
+        }
+
+        body {
+            font-family: "Nunito", "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: var(--bg-light);
+            color: #222;
+        }
+
+        /* Opening dialog styling */
+        .opening-bg {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 700ms cubic-bezier(.2, .9, .2, 1), transform 700ms cubic-bezier(.2, .9, .2, 1);
+            will-change: transform, opacity;
+        }
+
+        .reveal.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Accent underline for sections */
+        .section-accent::before {
+            content: "";
+            display: block;
+            height: 6px;
+            width: 64px;
+            background: linear-gradient(90deg, var(--accent-dark), var(--accent-mid));
+            margin-bottom: 1rem;
+            border-radius: 999px;
+        }
+
+        /* Opening overlay blur */
+        .backdrop-blur-soft {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        /* Audio title always visible on mobile */
+        .audio-title {
+            font-family: "Montserrat", sans-serif;
+            font-weight: 600;
+        }
+
+        /* Timeline stepper */
+        .stepper {
+            display: flex;
+            gap: 1.25rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step {
+            min-width: 180px;
+            padding: 1rem;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3));
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+
+        /* Bento gallery */
+        .bento-grid {
+            display: grid;
+            gap: 8px;
+            grid-auto-rows: 150px;
+        }
+
+        @media (min-width: 640px) {
+            .bento-grid {
+                grid-template-columns: repeat(4, 1fr);
+                grid-auto-rows: 140px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(6, 1fr);
+                grid-auto-rows: 160px;
+            }
+        }
+
+        /* Sticky nav mini */
+        .mini-nav {
+            position: fixed;
+            right: 1rem;
+            bottom: 1.25rem;
+            z-index: 60;
+        }
+
+        /* Smooth image handling */
+        .photo {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+
+        /* small accent for names written in script fonts */
+        .script {
+            font-family: "Rouge Script", "Italianno", cursive;
+            font-size: 2.4rem;
+            letter-spacing: 0.6px;
+        }
+
+        /* Small responsive tweaks for audio controls */
+        .audio-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* Make gallery items variable spans for bento style */
+        .g1 {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        .g2 {
+            grid-column: span 2;
+            grid-row: span 1;
+        }
+
+        .g3 {
+            grid-column: span 1;
+            grid-row: span 2;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Opening dialog / Cover (SECTION 1) -->
+    <div id="opening" class="opening-bg fixed inset-0 z-50 flex items-center justify-center text-white opening-bg"
+        style="background-image: url('https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1600&auto=format&fit=crop');">
+        <div class="absolute inset-0 bg-black/55 backdrop-blur-soft"></div>
+        <div class="relative z-10 max-w-3xl w-full px-6 py-12 text-center">
+            <div class="mb-6">
+                <div class="text-6xl font-semibold script drop-shadow-lg">A &amp; B</div>
+                <div class="mt-3 text-sm tracking-wide uppercase opacity-90">Sabtu, 20 Desember 2025</div>
+            </div>
+
+            <div id="invite-to" class="mb-6 text-lg">
+                Untuk: <span id="recipientName" class="font-semibold">Bapak/Ibu/Saudara/i</span>
+            </div>
+
+            <div class="mt-6 flex justify-center gap-3">
+                <button id="openInvite"
+                    class="px-6 py-3 rounded-full shadow-lg bg-gradient-to-r from-[#8A684E] to-[#CFB697] hover:opacity-95 transition-all">
+                    Buka Undangan
+                </button>
+                <button id="openPlay" class="px-4 py-3 rounded-full border border-white/30 bg-white/10">
+                    <svg id="openPlayIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14.752 11.168l-6.518-3.759A1 1 0 007 8.188v7.624a1 1 0 001.234.973l6.518-1.413a1 1 0 00.75-.973V12.14a1 1 0 00-.75-.972z" />
+                    </svg>
+                    <span class="ml-2">Play</span>
+                </button>
+            </div>
+
+            <p class="mt-8 text-sm opacity-80">Klik "Buka Undangan" untuk melihat detail acara dan memutar musik
+                undangan.</p>
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/30 pointer-events-none"></div>
+    </div>
+
+    <!-- Sticky nav (top) -->
+    <header class="sticky top-4 z-40 px-6">
+        <nav class="max-w-6xl mx-auto flex items-center justify-between py-2">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center shadow"
+                    style="border:1px solid rgba(0,0,0,0.04)">
+                    <div class="script text-xl text-[#8A684E]">A&B</div>
+                </div>
+                <div>
+                    <div class="font-semibold text-sm">A &amp; B</div>
+                    <div class="text-xs opacity-70">20 December 2025</div>
+                </div>
+            </div>
+
+            <div class="hidden sm:flex gap-4 items-center">
+                <a href="#section-2" class="text-sm hover:underline">Cerita</a>
+                <a href="#section-3" class="text-sm hover:underline">Acara</a>
+                <a href="#section-4" class="text-sm hover:underline">Galeri</a>
+                <a href="#section-5" class="text-sm hover:underline">Hadiah</a>
+                <a href="#section-6" class="text-sm hover:underline">Ucapan</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 pb-24">
+
+        <!-- AUDIO PLAYER (fixed bottom on small screens, top-right on large) -->
+        <div id="audioBar"
+            class="fixed left-1/2 -translate-x-1/2 bottom-4 sm:bottom-auto sm:top-6 z-50 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg flex items-center gap-3 audio-controls">
+            <audio id="weddingAudio" preload="metadata" loop>
+                <!-- Ganti src di bawah ini dengan source MP3 kamu -->
+                <source src="your-song.mp3" type="audio/mpeg" />
+                Browser kamu tidak mendukung elemen audio.
+            </audio>
+
+            <div class="flex items-center gap-3">
+                <button id="playPause" class="p-2 rounded-full hover:bg-gray-100">
+                    <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                    </svg>
+                </button>
+
+                <button id="muteBtn" class="p-2 rounded-full hover:bg-gray-100" title="Mute / Unmute">
+                    <svg id="soundOn" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path
+                            d="M3 10v4h4l5 5V5L7 10H3zM16.5 12c0-1.77-1-3.29-2.5-4.03v8.06c1.5-.74 2.5-2.26 2.5-4.03z" />
+                    </svg>
+                    <svg id="soundOff" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path
+                            d="M16.5 12c0-1.77-1-3.29-2.5-4.03v8.06c1.5-.74 2.5-2.26 2.5-4.03zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73L20.73 21 22 19.73 4.27 3z" />
+                    </svg>
+                </button>
+
+                <div class="audio-title text-sm hidden sm:block" id="audioTitle">Judul Lagu — Penyanyi</div>
+            </div>
+        </div>
+
+        <!-- Section 2: Intro & Profiles -->
+        <section id="section-2" class="mt-16 reveal">
+            <div class="max-w-4xl mx-auto text-center section-accent">
+                <h2 class="text-3xl font-semibold mb-2">Dengan Memohon Rahmat Tuhan</h2>
+                <p class="text-sm text-gray-600">Kami mengundang Bapak/Ibu/Saudara/i untuk hadir pada acara pernikahan
+                    kami</p>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <!-- Profile A -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-transparent hover:border-gray-100 transition">
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="w-36 h-36 rounded-full overflow-hidden bg-gray-100">
+                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop"
+                                alt="Mempelai A" class="photo">
+                        </div>
+                        <div class="text-center">
+                            <div class="script text-2xl text-[#8A684E]">Nama A</div>
+                            <div class="mt-1 text-sm font-medium">Putra dari Bapak X &amp; Ibu Y</div>
+                            <div class="mt-2 flex items-center gap-3">
+                                <a href="#" class="text-sm opacity-75">@instagramA</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile B -->
+                <div
+                    class="bg-white p-6 rounded-2xl shadow-sm border border-transparent hover:border-gray-100 transition">
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="w-36 h-36 rounded-full overflow-hidden bg-gray-100">
+                            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop"
+                                alt="Mempelai B" class="photo">
+                        </div>
+                        <div class="text-center">
+                            <div class="script text-2xl text-[#8A684E]">Nama B</div>
+                            <div class="mt-1 text-sm font-medium">Putri dari Bapak Z &amp; Ibu W</div>
+                            <div class="mt-2 flex items-center gap-3">
+                                <a href="#" class="text-sm opacity-75">@instagramB</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Info Acara -->
+        <section id="section-3" class="mt-20 reveal">
+            <div class="max-w-4xl mx-auto section-accent">
+                <h3 class="text-2xl font-semibold mb-1">Informasi Acara</h3>
+                <p class="text-sm text-gray-600">Detail waktu & lokasi</p>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-[#CFB697]">
+                    <h4 class="font-semibold">Akad</h4>
+                    <p class="mt-2 text-sm text-gray-600">Sabtu, 20 Desember 2025 — 09:00 WIB</p>
+                    <p class="mt-2 text-sm">Lokasi: Gedung Serba Guna (Nama Gedung)</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-[#8A684E]">
+                    <h4 class="font-semibold">Resepsi</h4>
+                    <p class="mt-2 text-sm text-gray-600">Sabtu, 20 Desember 2025 — 11:00 — 14:00 WIB</p>
+                    <p class="mt-2 text-sm">Lokasi: Hall Resepsi (Alamat lengkap)</p>
+                </div>
+
+                <!-- Map placeholder -->
+                <div
+                    class="col-span-1 lg:col-span-2 bg-white rounded-2xl p-4 shadow-sm border border-dashed border-gray-200">
+                    <div class="h-60 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+                        <div class="text-center text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M12 11c1.656 0 3-1.344 3-3S13.656 5 12 5 9 6.344 9 8s1.344 3 3 3zM12 21s7-4.5 7-10.5S14.42 2 12 2 5 6.5 5 10.5 12 21 12 21z" />
+                            </svg>
+                            <div class="text-sm">Map placeholder — tempel embed map di sini (Google Maps / Mapbox)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Gallery & Love Story -->
+        <section id="section-4" class="mt-20 reveal">
+            <div class="max-w-4xl mx-auto section-accent">
+                <h3 class="text-2xl font-semibold mb-1">Galeri & Love Story</h3>
+                <p class="text-sm text-gray-600">Kenangan kami</p>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Gallery Bento -->
+                <div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm">
+                        <div class="bento-grid grid-rows-3" id="galleryGrid">
+                            <!-- Example items: g1 g2 g3 to create a nice bento visual -->
+                            <div class="g1 overflow-hidden"><img
+                                    src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?q=80&w=1200&auto=format&fit=crop"
+                                    class="photo" alt="gal1"></div>
+                            <div class="g2 overflow-hidden"><img
+                                    src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1200&auto=format&fit=crop"
+                                    class="photo" alt="gal2"></div>
+                            <div class="g3 overflow-hidden"><img
+                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200&auto=format&fit=crop"
+                                    class="photo" alt="gal3"></div>
+                            <div class="g2 overflow-hidden"><img
+                                    src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
+                                    class="photo" alt="gal4"></div>
+                            <div class="g2 overflow-hidden"><img
+                                    src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1200&auto=format&fit=crop"
+                                    class="photo" alt="gal5"></div>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500">Tip: tambahkan 5-8 foto. Ubah src sesuai kebutuhan.</p>
+                    </div>
+                </div>
+
+                <!-- Love Story (Timeline horizontal 3-step) -->
+                <div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <h4 class="font-semibold mb-3">Our Love Story</h4>
+                        <div class="stepper">
+                            <div class="step">
+                                <div class="text-sm font-semibold">Pertemuan Pertama</div>
+                                <div class="mt-2 text-xs text-gray-600">Kami bertemu pada acara X, saat itu...</div>
+                            </div>
+                            <div class="step">
+                                <div class="text-sm font-semibold">Mulai Dekat</div>
+                                <div class="mt-2 text-xs text-gray-600">Seiring waktu, kami mulai berbagi...</div>
+                            </div>
+                            <div class="step">
+                                <div class="text-sm font-semibold">Lamaran & Janji</div>
+                                <div class="mt-2 text-xs text-gray-600">Akhirnya kami memutuskan untuk melangkah...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Gift / Transfer -->
+        <section id="section-5" class="mt-20 reveal">
+            <div class="max-w-4xl mx-auto section-accent">
+                <h3 class="text-2xl font-semibold mb-1">Hadiah & Transfer</h3>
+                <p class="text-sm text-gray-600">Apabila Anda ingin memberikan hadiah secara transfer</p>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Bank A -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm flex gap-4 items-center">
+                    <div class="w-16 h-16 rounded-lg bg-[#F3EDE6] flex items-center justify-center border">
+                        <!-- logo bank placeholder -->
+                        <div class="font-semibold text-xs text-[#8A684E]">BANK A</div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold">Nama A (Mempelai A)</div>
+                        <div class="text-xs text-gray-600 mt-1">No. Rekening: <span
+                                class="font-mono">1234-5678-901</span></div>
+                        <div class="text-xs text-gray-500 mt-1">Bank: Bank Contoh</div>
+                    </div>
+                </div>
+
+                <!-- Bank B -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm flex gap-4 items-center">
+                    <div class="w-16 h-16 rounded-lg bg-[#FFF6EB] flex items-center justify-center border">
+                        <div class="font-semibold text-xs text-[#CFB697]">BANK B</div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold">Nama B (Mempelai B)</div>
+                        <div class="text-xs text-gray-600 mt-1">No. Rekening: <span
+                                class="font-mono">9876-5432-100</span></div>
+                        <div class="text-xs text-gray-500 mt-1">Bank: Bank Contoh Lain</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Penutup -->
+        <section id="section-6" class="mt-20 reveal">
+            <div class="max-w-4xl mx-auto section-accent text-center">
+                <h3 class="text-2xl font-semibold mb-2">Penutup</h3>
+                <p class="text-sm text-gray-600">Kami berharap Bapak/Ibu/Saudara/i berkenan hadir dan memberikan do'a
+                    restu.</p>
+            </div>
+
+            <div class="mt-8 text-center">
+                <div class="inline-block bg-white p-6 rounded-2xl shadow-sm">
+                    <div class="script text-2xl text-[#8A684E]">Terima Kasih</div>
+                    <div class="text-xs text-gray-500 mt-2">Hormat kami, <br /> Nama A &amp; Nama B</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Footer -->
+        <footer id="section-7" class="mt-20 reveal">
+            <div class="max-w-6xl mx-auto text-center py-10">
+                <div class="text-sm text-gray-500">Made with ♥ by YourBrand — © 2025</div>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Mini nav (jump + back to top) -->
+    <div class="mini-nav">
+        <div class="flex flex-col gap-3">
+            <a href="#section-2" class="block bg-white p-3 rounded-full shadow hover:scale-105 transition"
+                title="Cerita">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                        d="M12 2L2 7l10 5 10-5-10-5zm0 13.5L3.7 9.6 12 5.2l8.3 4.4L12 15.5zM2.32 10.93L12 16l9.68-5.07v6.6L12 22 2.32 17.53v-6.6z" />
+                </svg>
+            </a>
+            <a href="#section-3" class="block bg-white p-3 rounded-full shadow hover:scale-105 transition"
+                title="Acara">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7 10h10v7H7z" />
+                    <path d="M5 3h14a2 2 0 012 2v3H3V5a2 2 0 012-2zM3 11h18v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6z" />
+                </svg>
+            </a>
+            <a href="#section-4" class="block bg-white p-3 rounded-full shadow hover:scale-105 transition"
+                title="Galeri">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14l4-4 3 3 5-5 5 5z" />
+                </svg>
+            </a>
+            <a href="#section-5" class="block bg-white p-3 rounded-full shadow hover:scale-105 transition"
+                title="Hadiah">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 12v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9" />
+                    <path d="M2 7v-.5A2.5 2.5 0 014.5 4H8l2 2 2-2h3.5A2.5 2.5 0 0122 6.5V7" />
+                </svg>
+            </a>
+            <a href="#" id="backToTop" class="block bg-white p-3 rounded-full shadow hover:scale-105 transition"
+                title="Top">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l8 8h-6v8h-4v-8H4z" />
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Utilities
+        function q(selector, el = document) { return el.querySelector(selector); }
+        function qa(selector, el = document) { return [...el.querySelectorAll(selector)]; }
+
+        // Recipient parsing from URL ?to=...
+        function getRecipientFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            let raw = params.get('to') || '';
+            raw = raw.replace(/\+/g, ' ');
+            raw = decodeURIComponent(raw);
+            raw = raw.trim();
+            if (!raw) return null;
+            return raw;
+        }
+
+        // Initialize recipient
+        (function initRecipient() {
+            const name = getRecipientFromUrl();
+            const el = document.getElementById('recipientName');
+            if (name) {
+                el.textContent = name;
+            } else {
+                el.textContent = 'Bapak/Ibu/Saudara/i';
+            }
+        })();
+
+        // Audio controls
+        const audio = document.getElementById('weddingAudio');
+        const playPauseBtn = document.getElementById('playPause');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const muteBtn = document.getElementById('muteBtn');
+        const soundOn = document.getElementById('soundOn');
+        const soundOff = document.getElementById('soundOff');
+        const audioTitle = document.getElementById('audioTitle');
+
+        // configure default volume (70%)
+        audio.volume = 0.7;
+        audio.muted = false;
+
+        function updatePlayUI(isPlaying) {
+            if (isPlaying) {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        }
+        function updateMuteUI(isMuted) {
+            if (isMuted) {
+                soundOn.classList.add('hidden');
+                soundOff.classList.remove('hidden');
+            } else {
+                soundOn.classList.remove('hidden');
+                soundOff.classList.add('hidden');
+            }
+        }
+
+        playPauseBtn.addEventListener('click', function (e) {
+            if (audio.paused) {
+                audio.play().catch(() => {/* autoplay blocked */ });
+                updatePlayUI(true);
+            } else {
+                audio.pause();
+                updatePlayUI(false);
+            }
+        });
+
+        muteBtn.addEventListener('click', function () {
+            audio.muted = !audio.muted;
+            updateMuteUI(audio.muted);
+        });
+
+        // Ensure audio title visible on small screens: we duplicate title text
+        // The audioTitle innerText can be customized by editing element
+        // Also "openPlay" button triggers play from opening dialog
+        document.getElementById('openPlay').addEventListener('click', function () {
+            audio.play().then(() => {
+                updatePlayUI(true);
+            }).catch(() => { updatePlayUI(false); });
+        });
+
+        // Opening dialog behavior: close and scroll to section-2, play audio
+        document.getElementById('openInvite').addEventListener('click', async function () {
+            // play audio if possible
+            try {
+                await audio.play();
+                updatePlayUI(true);
+            } catch (e) {
+                // ignore autoplay block
+                updatePlayUI(false);
+            }
+
+            // animate dialog out
+            const opening = document.getElementById('opening');
+            opening.style.transition = 'opacity 600ms ease, transform 600ms ease';
+            opening.style.opacity = '0';
+            opening.style.transform = 'scale(0.98)';
+            setTimeout(() => opening.remove(), 650);
+
+            // scroll to section-2
+            document.querySelector('#section-2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // IntersectionObserver for reveal on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    // optionally unobserve if you want one-time reveal
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+
+        qa('.reveal').forEach(el => observer.observe(el));
+
+        // Back to top
+        document.getElementById('backToTop').addEventListener('click', function (e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Show audio title on small screens (duplicate visibility)
+        // If you want to set the audio title from metadata, you can set audioTitle.textContent
+        // Ensure it's visible on mobile
+        // Make sure audioTitle visible on small screens: we ensured it's always in the DOM
+
+        // Keyboard accessibility: space toggles play/pause when audio bar focused
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && document.activeElement === document.body) {
+                e.preventDefault();
+                if (audio.paused) audio.play().then(() => updatePlayUI(true)).catch(() => { });
+                else { audio.pause(); updatePlayUI(false); }
+            }
+        });
+
+        // Gallery dynamic rendering hint (if you want to programmatically add images)
+        // Example: const gallery = document.getElementById('galleryGrid');
+        // You can insert <div class="g2 overflow-hidden"><img src="..." class="photo"></div> dynamically
+
+        // Accessibility: reduce motion for users prefers-reduced-motion
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            qa('.reveal').forEach(el => {
+                el.style.transition = 'none';
+                el.classList.add('in-view');
+            });
+        }
+    </script>
+</body>
+
+</html>
